@@ -27,6 +27,12 @@ class Move(Resource):
 		print(args)
 		ACTION['speed'] = args['speed']
 		ACTION['angle'] = args['angle']
+
+		#if ACTION['speed'] != None:
+			#motor.set_speed(ACTION['speed'])
+		#if ACTION['angle'] != None:
+			#servo.set_angle(ACTION['angle'])
+
 		return {'success':'True'}
 
 api.add_resource(Move, '/<string:action>')

@@ -50,7 +50,7 @@ class Servo:
 
 		atexit.register(self.deactivate)
 
-	def turn(self, angle):
+	def set_angle(self, angle):
 		#turn the servo, respect the parameters
 		if angle > 0:
 			self._angle = min(angle, SERVO_MAX_ANGLE)
