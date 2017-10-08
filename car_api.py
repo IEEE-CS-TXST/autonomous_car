@@ -33,8 +33,6 @@ class Move(Resource):
 		#if ACTION['angle'] != None:
 			#servo.set_angle(ACTION['angle'])
 
-		return {'success':'True'}
-
 api.add_resource(Move, '/<string:action>')
 
 if __name__ == '__main__':
