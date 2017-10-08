@@ -9,4 +9,4 @@ if __name__ == '__main__':
 	while True:
 		action = wasd.get_action()
 		r = requests.put('http://127.0.0.1:5000/Move', data=action)
-		sleep(.5)
+		sleep(.05)

@@ -20,7 +20,7 @@ class WASDController:
 		#turn the car
 		if key == 'KEY_A':
 			self._angle = max(self._angle - 10, self._MIN_ANGLE)
-		elif key == 'KEY_W':
+		elif key == 'KEY_D':
 			self._angle = min(self._angle + 10, self._MAX_ANGLE)
 
 	def set_speed(self, key):
@@ -29,8 +29,6 @@ class WASDController:
 			self._speed = min(self._speed + 20, self._MAX_SPEED)
 		elif key == 'KEY_S':
 			self._speed = max(self._speed - 20, 0)
-		else:
-			self._speed = max(self._speed - 5, 0)
 
 	def get_angle(self):
 		return self._angle
