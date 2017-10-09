@@ -1,6 +1,6 @@
 from flask import Flask, request 
 from flask_restful import Resource, Api, reqparse
-#from car import Motor, Servo
+from car import Motor, Servo
 
 app = Flask(__name__)
 api = Api(app)
@@ -36,4 +36,4 @@ class Move(Resource):
 api.add_resource(Move, '/<string:action>')
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, host='0.0.0.0')

@@ -17,8 +17,8 @@ class Motor:
 
 	def __init__(self):
 		#Constructor, take care of setup
-		atexit.register(self._turn_off_motors)
-		self._MH = 	Adafruit_MotorHAT(addr=0x60)
+		atexit.register(self._turn_off_motor)
+		self._MH = Adafruit_MotorHAT(addr=0x60)
 		self._motor = self._MH.getMotor(MOTOR_NUMBER)
 
 	def set_speed(self, speed):
