@@ -2,29 +2,38 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT
 from gpiozero import AngularServo
 import atexit
 
-MOTOR_NUMBER = 3
-SERVO_PIN = 17
+MOTOR_NUMBERS = [3, 4]
+SERVO_PIN = 23
 SERVO_MIN_PULSE_WIDTH = .0008
 SERVO_MAX_PULSE_WIDTH = .0018
 SERVO_MIN_ANGLE = -60
 SERVO_MAX_ANGLE = 60
 
-class Motor:
+class Motors:
 
 	_MH = None
-	_motor = None
+	_motors = None
 	_speed = 0
 
 	def __init__(self):
 		#Constructor, take care of setup
 		atexit.register(self._turn_off_motor)
 		self._MH = Adafruit_MotorHAT(addr=0x60)
-		self._motor = self._MH.getMotor(MOTOR_NUMBER)
+		self._motors = [self._MH.getMotor(MOTOR_NUMBERS[0]),
+				self._MH.getMotor(MOTOR_NUMBERS[1])]
 
 	def set_speed(self, speed):
 		#set the motor speed
-		self._speed = speed
-		self._motor.setSpeed(speed)
+		if speed >= 0:
+			for motor in self._motors:
+				motor.run(Adafruit_MotorHAT.FORWARD)
+				self._speed = speed
+				motor.setSpeed(speed)
+		else:
+			for motor in self._motors:
+				motor.run(Adafruit_MotorHAT.BACKWARD)
+				self._speed = speed
+				motor.setSpeed(-1 * speed)
 
 	def get_speed(self):
 		#get the motor speed
@@ -32,7 +41,8 @@ class Motor:
 
 	def _turn_off_motor(self):
 		#turn off the motor when shutdown
-		self._MH.getMotor(MOTOR_NUMBER).run(Adafruit_MotorHAT.RELEASE)
+		for MOTOR_NUMBER in MOTOR_NUMBERS:
+			self._MH.getMotor(MOTOR_NUMBER).run(Adafruit_MotorHAT.RELEASE)
 
 class Servo:
 

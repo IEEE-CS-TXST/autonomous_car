@@ -1,10 +1,10 @@
 from flask import Flask, request 
 from flask_restful import Resource, Api, reqparse
-from car import Motor, Servo
+from car import Motors, Servo
 
 app = Flask(__name__)
 api = Api(app)
-#motor = Motor()
+motors = Motors()
 #servo = Servo()
 parser = reqparse.RequestParser()
 parser.add_argument('speed')
@@ -28,8 +28,9 @@ class Move(Resource):
 		ACTION['speed'] = args['speed']
 		ACTION['angle'] = args['angle']
 
-		#if ACTION['speed'] != None:
-			#motor.set_speed(int(ACTION['speed']))
+		if ACTION['speed'] != None:
+			motors.set_speed(int(ACTION['speed']))
+			print(ACTION['speed'])
 		#if ACTION['angle'] != None:
 			#servo.set_angle(int(ACTION['angle']))
 
