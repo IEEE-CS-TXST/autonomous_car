@@ -7,6 +7,7 @@ class WASDController:
 
 	_angle = 0
 	_speed = 0
+	_MIN_SPEED = -255
 	_MAX_SPEED = 255
 	_MAX_ANGLE = 60
 	_MIN_ANGLE = -60
@@ -28,7 +29,7 @@ class WASDController:
 		if key == 'KEY_W':
 			self._speed = min(self._speed + 20, self._MAX_SPEED)
 		elif key == 'KEY_S':
-			self._speed = max(self._speed - 20, 0)
+			self._speed = max(self._speed - 20, self._MIN_SPEED)
 
 	def get_angle(self):
 		return self._angle
