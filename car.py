@@ -3,7 +3,7 @@ from gpiozero import AngularServo
 import atexit
 
 MOTOR_NUMBERS = [3, 4]
-SERVO_PIN = 23
+SERVO_PIN = 18
 SERVO_MIN_PULSE_WIDTH = .0008
 SERVO_MAX_PULSE_WIDTH = .0018
 SERVO_MIN_ANGLE = -60
