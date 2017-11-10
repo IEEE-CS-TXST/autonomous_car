@@ -6,7 +6,7 @@ import re
 import cv2
 import subprocess
 from PIL import Image
-from StringIO import StringIO
+from io import StringIO
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,11 +15,6 @@ servo = Servo()
 parser = reqparse.RequestParser()
 parser.add_argument('speed', default=None)
 parser.add_argument('angle', default=None)
-
-#from theopolime/webcam-streamer
-def list_camera_ids():
-    cameras = subprocess.Popen(['ls', '/dev/video*'], stdout=subprocesses.PIPE).comunicate()[0]
-    return re.findall(r'\d+', cameras)
 
 ACTION = {
     'speed':None,
@@ -51,19 +46,19 @@ class Move(Resource):
 class Picture(Resource):
     
     def __init__(self, *args, **kwargs):
-        self.cam = cv2.VideoCapture(int(list_camera_ids()[0]))
-        self.super().__init(*args, **kwargs)
+        self.cam = cv2.VideoCapture(0)
+        super(Picture, self).__init__(*args, **kwargs)
 
     def get(self):
         ret, frame = self.cam.read()
         image = Image.fromarray(frame)
         buff = StringIO()
         image.save(buff, 'JPEG')
-        _, img_encoded = cv2.imencode('JPEG', buff.getvalue())
-        
-
+        ret, img_encoded = cv2.imencode('JPEG', buff.getvalue())
+        return send_file(img_encoded)
 
 api.add_resource(Move, '/Move')
+api.add_resource(Picture, '/Picture')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='localhost')

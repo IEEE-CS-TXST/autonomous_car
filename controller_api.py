@@ -2,6 +2,9 @@ import requests
 from time import sleep
 from controller import WASDController
 import argparse
+import cv2
+from io import StringIO
+from PIL import Image
 
 controllers = {'WASDController':WASDController}
 
@@ -13,6 +16,11 @@ def get_args_parser():
 
     return parser
 
+def decode_image_and_display(img_buff, window):
+    
+    img = Image.open(img_buff)
+    ret = cv2.imdecode(img.getdata(), 0)
+    cv2.imshow(window, img_buff)
 
 if __name__ == '__main__':
 
@@ -22,11 +30,15 @@ if __name__ == '__main__':
     ip_address = args.ip_address
     delay = args.delay
     action_prev = None
+    window = 'DisplayWindow'
+    cv2.namedWindow(window)
 
     while True:
         
         action = controller.get_action()
         if action != action_prev:
             r = requests.put('http://' + ip_address + ':5000/Move', data=action)
-            action_prev = action
+            p = requests.get('http://' + ip_address + ':5000/Picture')
+            decode_image_and_display(StringIO(p.text), window)
+
         sleep(delay)
