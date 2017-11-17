@@ -3,8 +3,8 @@ from time import sleep
 from controller import WASDController
 import argparse
 import cv2
-from io import StringIO
-from PIL import Image
+from io import BytesIO
+import numpy as np
 
 controllers = {'WASDController':WASDController}
 
@@ -16,11 +16,14 @@ def get_args_parser():
 
     return parser
 
-def decode_image_and_display(img_buff, window):
+def decode_image_and_display(img_buff):
     
-    img = Image.open(img_buff)
-    ret = cv2.imdecode(img.getdata(), 0)
-    cv2.imshow(window, img_buff)
+    img_data = np.fromstring(img_buff, dtype=np.uint8)
+    shape = tuple(img_data[:3])
+    frame = img_data[3:].reshape(shape)
+    cv2.imshow('DisplayWindow', frame)
+    cv2.waitKey()
+    # cv2.destroyAllWindows()
 
 if __name__ == '__main__':
 
@@ -30,15 +33,13 @@ if __name__ == '__main__':
     ip_address = args.ip_address
     delay = args.delay
     action_prev = None
-    window = 'DisplayWindow'
-    cv2.namedWindow(window)
 
     while True:
         
         action = controller.get_action()
         if action != action_prev:
             r = requests.put('http://' + ip_address + ':5000/Move', data=action)
-            p = requests.get('http://' + ip_address + ':5000/Picture')
-            decode_image_and_display(StringIO(p.text), window)
+        p = requests.get('http://' + ip_address + ':5000/Picture')
+        decode_image_and_display(p.content)
 
         sleep(delay)
