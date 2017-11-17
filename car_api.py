@@ -19,8 +19,9 @@ r_parser.add_argument('angle', default=None)
 def get_args_parser():
 
     cmd_parser = argparse.ArgumentParser(description='Remote Controlled Car Restful API')
+    cmd_parser.add_argument('--devno', dest='devno', type=int, default=0, help='device number of the video capture device')
     cmd_parser.add_argument('--host', dest='host', type=str, default='0.0.0.0', help='hostname; generally localhost or 0.0.0.0')
-    cmd_parser.add_argument('--port', dest='port', type=str, default='5000', help='port to expose app on')
+    cmd_parser.add_argument('--port', dest='port', type=int, default=5000, help='port to expose app on')
     return cmd_parser
 
 ACTION = {
@@ -44,7 +45,7 @@ class Move(Resource):
         ACTION['speed'] = int(args['speed'])
         ACTION['angle'] = int(args['angle'])
         
-        #take the action
+        take the action
         if ACTION['speed'] != None:
             motors.set_speed(ACTION['speed'])
         if ACTION['angle'] != None:
@@ -53,7 +54,8 @@ class Move(Resource):
 class Picture(Resource):
     
     def __init__(self, *args, **kwargs):
-        self.cam = cv2.VideoCapture(1)
+        vid_dev_no = kwargs.pop('devno', 0)
+        self.cam = cv2.VideoCapture(vid_dev_no)
         super(Picture, self).__init__(*args, **kwargs)
 
     def get(self):
@@ -64,10 +66,9 @@ class Picture(Resource):
         frame = BytesIO(frame.tobytes())
         return send_file(frame, mimetype='image/jpeg')
 
-api.add_resource(Move, '/Move')
-api.add_resource(Picture, '/Picture')
-
 if __name__ == '__main__':
 
-	cmd_args = get_args_parser().parse_args()
+    cmd_args = get_args_parser().parse_args()
+    api.add_resource(Move, '/Move')
+    api.add_resource(Picture, '/Picture', resource_class_kwargs={'devno':cmd_args.devno})
     app.run(debug=True, host=cmd_args.host, port=cmd_args.port)
