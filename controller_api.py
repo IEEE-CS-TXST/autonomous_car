@@ -5,8 +5,14 @@ import argparse
 import cv2
 from io import BytesIO
 import numpy as np
+from queue import Queue, Empty
+from threading import Thread 
 
 controllers = {'WASDController':WASDController}
+
+def cleanup():
+    cv2.destroyAllWindows()
+    exit(1)
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Control remote controlled car')
@@ -18,12 +24,25 @@ def get_args_parser():
 
 def decode_image_and_display(img_buff):
     
-    img_data = np.fromstring(img_buff, dtype=np.uint8)
+    img_data = np.fromstring(img_buff, dtype=np.uint64)
     shape = tuple(img_data[:3])
     frame = img_data[3:].reshape(shape)
+    frame = frame.astype(np.uint8)
+
     cv2.imshow('DisplayWindow', frame)
-    cv2.waitKey()
-    # cv2.destroyAllWindows()
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        cleanup()
+
+def enqueue_action(queue, controller):
+    while True:
+        queue.put_nowait(controller.get_action())
+
+def dequeue_action(queue):
+    try:
+        return queue.get_nowait()
+    except Empty:
+        return None
 
 if __name__ == '__main__':
 
@@ -32,13 +51,19 @@ if __name__ == '__main__':
     controller = Controller()
     ip_address = args.ip_address
     delay = args.delay
-    action_prev = None
+    prev = None
+    q = Queue()
+    t = Thread(target=enqueue_action, args=(q, controller))
+    t.daemon = True
+    t.start()
 
     while True:
         
-        action = controller.get_action()
-        if action != action_prev:
+        action = dequeue_action(q)
+        if action and action != prev:
+            print(action)
             r = requests.put('http://' + ip_address + ':5000/Move', data=action)
+            prev = action
         p = requests.get('http://' + ip_address + ':5000/Picture')
         decode_image_and_display(p.content)
 
