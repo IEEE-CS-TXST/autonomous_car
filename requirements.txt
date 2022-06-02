@@ -16,7 +16,7 @@ Flask==0.12.2
 Flask-RESTful==0.3.6
 gpiozero==1.4.0
 greenlet==0.4.12
-html5lib==0.9999999
+html5lib==0.99999999
 idna==2.6
 inputs==0.1
 ipykernel==4.6.1
